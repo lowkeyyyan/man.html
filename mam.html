@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glue Song Surprise</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            transition: background 1.5s ease-in-out;
+        }
+
+        /* Styling for video background */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .initial {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f0f0;
+            text-align: center;
+        }
+
+        .initial img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .initial img:hover {
+            transform: scale(1.1);
+        }
+
+        .initial p {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .romantic {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1, #fbc2eb);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .romantic img {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 10px solid white;
+            padding: 10px;
+            animation: glowing 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowing {
+            0% {
+                box-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
+            }
+            100% {
+                box-shadow: 0 0 30px white, 0 0 40px white, 0 0 50px white;
+            }
+        }
+
+        .lyrics {
+            font-size: 1.5em;
+            text-shadow: 0 0 5px white, 0 0 10px pink;
+            margin: 20px 0;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        audio {
+            display: none;
+        }
+
+        /* Make sure the layout is responsive */
+        @media (max-width: 768px) {
+            .romantic img {
+                width: 80%;
+            }
+            .initial img {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* Ensure proper scaling for iPad size */
+        @media (max-width: 1024px) {
+            .romantic img {
+                width: 250px;
+                height: auto;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Initial View -->
+    <div class="initial">
+        <img src="hi.jpg" alt="Tap Me" onclick="startSurprise()">
+        <p>Tap this me when you!</p>
+    </div>
+
+    <!-- Romantic View -->
+    <div class="romantic">
+        <img src="key.jpg" alt="Album Cover">
+        <div class="lyrics" id="lyrics"></div>
+        <audio id="glueSong" onended="replayPage()">
+            <source src="gs.mp4" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <script>
+    const lyrics = [
+    "Finding the right words",
+    "To use for this song",
+    "I have you in mind",
+    "So it won't take so long",
+    "Never thought I'd find you",
+    "But you're here",
+    "And so I love you",
+    "I'm not wrong",
+    "When I say I've been stuck",
+    "By the glue onto you"
+    ];
+    const timings = [0.5, 3.5, 6, 8, 12, 14.5, 15.5, 17.5, 19, 22]; // Adjusted timings for better sync
+    let currentIndex = 0;
+    
+    function startSurprise() {
+    // Transition to romantic view
+    document.querySelector('.initial').style.display = 'none';
+    const romanticView = document.querySelector('.romantic');
+    romanticView.style.display = 'flex';
+    
+    // Play song
+    const song = document.getElementById("glueSong");
+    song.play();
+    
+    // Reset lyrics and timing when the song starts or restarts
+    song.onplay = function() {
+    resetLyrics();
+    };
+    
+    // Display lyrics
+    song.addEventListener("timeupdate", () => {
+    if (currentIndex < lyrics.length && song.currentTime >= timings[currentIndex]) {
+    showLyrics(lyrics[currentIndex]);
+    currentIndex++;
+    }
+    });
+    }
+    
+    function showLyrics(line) {
+    const lyricsDiv = document.getElementById("lyrics");
+    lyricsDiv.innerText = line;
+    lyricsDiv.style.opacity = 1;
+    
+    // Fade out the lyrics after 15 seconds (your preferred timing)
+    setTimeout(() => {
+    lyricsDiv.style.opacity = 0;
+    }, 10000000); // Keeping your 15000ms fade-out time
+    }
+    
+    function resetLyrics() {
+    // Reset the lyrics index and clear any displayed text
+    currentIndex = 0;
+    document.getElementById("lyrics").innerText = "";  // Clear lyrics before restarting
+    }
+    
+    function replayPage() {
+    // Reset romantic view
+    document.querySelector('.romantic').style.display = 'none';
+    const initialView = document.querySelector('.initial');
+    initialView.style.display = 'flex';
+    
+    // Reset lyrics and timing
+    resetLyrics();
+    
+    // Reset song
+    const song = document.getElementById("glueSong");
+    song.currentTime = 0; // Ensure the song starts over from the beginning
+    song.pause(); // Pause the song before playing it again
+    }
+    
+    // Handle song end (for when it loops)
+    document.getElementById("glueSong").onended = function() {
+    replayPage(); // Reset the page when the song ends
+    };
+    </script>
+    
+</body>
+</html>
